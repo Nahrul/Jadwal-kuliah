@@ -19,14 +19,6 @@
         .modal {
             background-color: rgba(0, 0, 0, 0.5);
         }
-        .kategori-kuliah { background-color: #fce7f3; }
-        .kategori-kuliah .text-kategori { color: #be185d; }
-
-        .kategori-kerja { background-color: #e0f2fe; }
-        .kategori-kerja .text-kategori { color: #075985; }
-        
-        .kategori-lain { background-color: #eef2ff; }
-        .kategori-lain .text-kategori { color: #3730a3; }
     </style>
 </head>
 <body class="bg-gray-100 p-4">
@@ -35,11 +27,8 @@
         <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Jadwal Multi-Kategori</h1>
 
         <!-- Navigation Bar -->
-        <div class="flex flex-wrap justify-center mb-8 gap-2">
-            <button data-category="Semua" class="filter-btn bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-full hover:bg-gray-300 transition-colors duration-200">Semua Jadwal</button>
-            <button data-category="Kuliah" class="filter-btn bg-pink-100 text-pink-700 font-semibold py-2 px-4 rounded-full hover:bg-pink-200 transition-colors duration-200">Kuliah</button>
-            <button data-category="Kerja" class="filter-btn bg-blue-100 text-blue-700 font-semibold py-2 px-4 rounded-full hover:bg-blue-200 transition-colors duration-200">Kerja</button>
-            <button data-category="Acara Lain" class="filter-btn bg-indigo-100 text-indigo-700 font-semibold py-2 px-4 rounded-full hover:bg-indigo-200 transition-colors duration-200">Acara Lain</button>
+        <div id="nav-container" class="flex flex-wrap justify-center mb-8 gap-2">
+            <!-- Nav buttons will be rendered here by JS -->
         </div>
         
         <div class="flex flex-col md:flex-row justify-center items-center mb-8 gap-4">
@@ -49,11 +38,36 @@
                 </svg>
                 Tambah Jadwal Baru
             </button>
+            <button id="manage-categories-btn" class="bg-gray-400 text-white font-semibold py-3 px-6 rounded-full hover:bg-gray-500 transition-colors duration-200 shadow-md">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block -mt-1 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.941 3.31.82 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.941 1.543-.82 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.941-3.31-.82-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.941-1.543.82-3.31 2.37-2.37.996.608 2.296.447 2.572-1.065z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                Kelola Kategori
+            </button>
         </div>
         <hr class="my-6 border-gray-200">
 
         <div id="jadwal-container" class="space-y-6">
-            <!-- Jadwal akan ditampilkan di sini -->
+            <!-- Jadwal will be rendered here -->
+        </div>
+
+        <!-- Modal for Managing Categories -->
+        <div id="category-modal" class="modal fixed inset-0 flex items-center justify-center p-4 hidden z-50">
+            <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md transform transition-all scale-95 duration-200 ease-out">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Kelola Kategori</h2>
+                <ul id="category-list" class="space-y-2 mb-4">
+                    <!-- Categories will be rendered here -->
+                </ul>
+                <form id="add-category-form" class="flex gap-2 mb-4">
+                    <input type="text" id="new-category-name" class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" placeholder="Nama kategori baru" required>
+                    <input type="color" id="new-category-color" value="#a0b8e9" class="w-10 h-10 rounded-md border-gray-300 shadow-sm">
+                    <button type="submit" class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-full hover:bg-blue-700 transition-colors duration-200">Tambah</button>
+                </form>
+                <div class="flex justify-end">
+                    <button type="button" id="close-category-modal-btn" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300">Tutup</button>
+                </div>
+            </div>
         </div>
 
         <!-- Modal for Editing/Adding Schedules -->
@@ -64,23 +78,15 @@
                     <div>
                         <label for="edit-kategori" class="block text-sm font-medium text-gray-700">Kategori</label>
                         <select id="edit-kategori" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                            <option value="Kuliah">Kuliah</option>
-                            <option value="Kerja">Kerja</option>
-                            <option value="Acara Lain">Acara Lain</option>
+                            <!-- Options will be dynamically populated -->
                         </select>
                     </div>
-                    <div>
-                        <label for="edit-hari" class="block text-sm font-medium text-gray-700">Hari</label>
-                        <select id="edit-hari" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                            <option value="Senin">Senin</option>
-                            <option value="Selasa">Selasa</option>
-                            <option value="Rabu">Rabu</option>
-                            <option value="Kamis">Kamis</option>
-                            <option value="Jumat">Jumat</option>
-                            <option value="Sabtu">Sabtu</option>
-                            <option value="Minggu">Minggu</option>
-                        </select>
+                    
+                    <!-- Dynamic Input based on Category -->
+                    <div id="date-or-day-input">
+                        <!-- Content will be rendered by JavaScript -->
                     </div>
+
                     <div>
                         <label for="edit-waktu-mulai" class="block text-sm font-medium text-gray-700">Waktu Mulai</label>
                         <input type="time" id="edit-waktu-mulai" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
@@ -114,34 +120,77 @@
         document.addEventListener('DOMContentLoaded', () => {
             const jadwalContainer = document.getElementById('jadwal-container');
             const addNewJadwalBtn = document.getElementById('add-new-jadwal-btn');
+            const manageCategoriesBtn = document.getElementById('manage-categories-btn');
             const editModal = document.getElementById('edit-modal');
             const modalTitle = document.getElementById('modal-title');
             const editForm = document.getElementById('edit-form');
             const cancelEditBtn = document.getElementById('cancel-edit-btn');
-            const filterBtns = document.querySelectorAll('.filter-btn');
-            
+            const editKategori = document.getElementById('edit-kategori');
+            const dateOrDayInput = document.getElementById('date-or-day-input');
+            const navContainer = document.getElementById('nav-container');
+
+            const categoryModal = document.getElementById('category-modal');
+            const categoryList = document.getElementById('category-list');
+            const addCategoryForm = document.getElementById('add-category-form');
+            const newCategoryNameInput = document.getElementById('new-category-name');
+            const newCategoryColorInput = document.getElementById('new-category-color');
+            const closeCategoryModalBtn = document.getElementById('close-category-modal-btn');
+
+            const semesterLengthWeeks = 16;
             const hariMap = {
                 'Senin': 1, 'Selasa': 2, 'Rabu': 3, 'Kamis': 4, 'Jumat': 5, 'Sabtu': 6, 'Minggu': 0
             };
 
-            const semesterLengthWeeks = 16;
             let jadwalData = JSON.parse(localStorage.getItem('multiCategoryJadwal')) || [];
+            let categories = JSON.parse(localStorage.getItem('customCategories')) || [
+                { id: 'Kuliah', name: 'Kuliah', color: '#be185d' },
+                { id: 'Kerja', name: 'Kerja', color: '#075985' },
+                { id: 'Acara Lain', name: 'Acara Lain', color: '#3730a3' }
+            ];
+            let activeCategory = 'Semua';
 
             // Initial data from the image
             if (jadwalData.length === 0) {
                 jadwalData = [
-                    { kategori: 'Kuliah', hari: 'Selasa', waktuMulai: '08:00', waktuSelesai: '11:00', judul: 'Jaringan Komputer', deskripsi: 'Dosen: Syaiful Ramadhan, M.Kom. Ahmad Ngiliyun, M.Kom. Kode: IF13-WA', lokasi: 'A2, Lab Kom.' },
-                    { kategori: 'Kuliah', hari: 'Selasa', waktuMulai: '13:00', waktuSelesai: '16:20', judul: 'Pemrograman Web', deskripsi: 'Dosen: Mohamad Firdaus, S.Kom, M.Kom. Kode: IF10-WA', lokasi: 'A2, Lab Kom.' },
-                    { kategori: 'Kuliah', hari: 'Rabu', waktuMulai: '08:30', waktuSelesai: '11:00', judul: 'Statistika', deskripsi: 'Dosen: Husni Hidayat Malik, S.Pd., M.Kom. Dr. Indra Surya Permana, MM, M.Kom. Kode: IF25-WA', lokasi: 'A2, Lab Kom.' },
-                    { kategori: 'Kuliah', hari: 'Kamis', waktuMulai: '09:00', waktuSelesai: '12:20', judul: 'Organisasi dan Arsitektur Komputer', deskripsi: 'Dosen: Hendri Rosmawan, S.Kom., M.Kom. Kode: IF18-WA', lokasi: 'A2, Lab Kom.' },
-                    { kategori: 'Kuliah', hari: 'Kamis', waktuMulai: '13:00', waktuSelesai: '15:30', judul: 'Pemrograman Berorientasi Objek', deskripsi: 'Dosen: Hendri Rosmawan, S.Kom., M.Kom. Kode: IF14-WA', lokasi: 'A2, Lab Kom.' },
-                    { kategori: 'Kuliah', hari: 'Sabtu', waktuMulai: '08:00', waktuSelesai: '10:00', judul: 'Basis Data', deskripsi: 'Dosen: Mohamad Firdaus, S.Kom, M.Kom. Kode: IF24-WA', lokasi: 'A2, Lab Kom.' },
-                    { kategori: 'Kuliah', hari: 'Sabtu', waktuMulai: '09:40', waktuSelesai: '12:10', judul: 'Sistem Operasi', deskripsi: 'Dosen: Yassep Azzery, S.Pd., M.T. Kode: IF23-WA', lokasi: 'A2, Lab Kom.' }
+                    { id: Date.now(), kategori: 'Kuliah', hari: 'Selasa', waktuMulai: '08:00', waktuSelesai: '11:00', judul: 'Jaringan Komputer', deskripsi: 'Dosen: Syaiful Ramadhan, M.Kom. Ahmad Ngiliyun, M.Kom. Kode: IF13-WA', lokasi: 'A2, Lab Kom.' },
+                    { id: Date.now() + 1, kategori: 'Kuliah', hari: 'Selasa', waktuMulai: '13:00', waktuSelesai: '16:20', judul: 'Pemrograman Web', deskripsi: 'Dosen: Mohamad Firdaus, S.Kom, M.Kom. Kode: IF10-WA', lokasi: 'A2, Lab Kom.' },
+                    { id: Date.now() + 2, kategori: 'Kuliah', hari: 'Rabu', waktuMulai: '08:30', waktuSelesai: '11:00', judul: 'Statistika', deskripsi: 'Dosen: Husni Hidayat Malik, S.Pd., M.Kom. Dr. Indra Surya Permana, MM, M.Kom. Kode: IF25-WA', lokasi: 'A2, Lab Kom.' },
+                    { id: Date.now() + 3, kategori: 'Kuliah', hari: 'Kamis', waktuMulai: '09:00', waktuSelesai: '12:20', judul: 'Organisasi dan Arsitektur Komputer', deskripsi: 'Dosen: Hendri Rosmawan, S.Kom., M.Kom. Kode: IF18-WA', lokasi: 'A2, Lab Kom.' },
+                    { id: Date.now() + 4, kategori: 'Kuliah', hari: 'Kamis', waktuMulai: '13:00', waktuSelesai: '15:30', judul: 'Pemrograman Berorientasi Objek', deskripsi: 'Dosen: Hendri Rosmawan, S.Kom., M.Kom. Kode: IF14-WA', lokasi: 'A2, Lab Kom.' },
+                    { id: Date.now() + 5, kategori: 'Kuliah', hari: 'Sabtu', waktuMulai: '08:00', waktuSelesai: '10:00', judul: 'Basis Data', deskripsi: 'Dosen: Mohamad Firdaus, S.Kom, M.Kom. Kode: IF24-WA', lokasi: 'A2, Lab Kom.' },
+                    { id: Date.now() + 6, kategori: 'Kuliah', hari: 'Sabtu', waktuMulai: '09:40', waktuSelesai: '12:10', judul: 'Sistem Operasi', deskripsi: 'Dosen: Yassep Azzery, S.Pd., M.T. Kode: IF23-WA', lokasi: 'A2, Lab Kom.' }
                 ];
                 localStorage.setItem('multiCategoryJadwal', JSON.stringify(jadwalData));
             }
 
-            let activeCategory = 'Semua';
+            function saveCategories() {
+                localStorage.setItem('customCategories', JSON.stringify(categories));
+            }
+
+            function renderNavButtons() {
+                navContainer.innerHTML = '';
+                const allBtn = document.createElement('button');
+                allBtn.setAttribute('data-category', 'Semua');
+                allBtn.classList.add('filter-btn', 'bg-gray-200', 'text-gray-700', 'font-semibold', 'py-2', 'px-4', 'rounded-full', 'hover:bg-gray-300', 'transition-colors', 'duration-200');
+                allBtn.textContent = 'Semua Jadwal';
+                navContainer.appendChild(allBtn);
+
+                categories.forEach(cat => {
+                    const btn = document.createElement('button');
+                    btn.setAttribute('data-category', cat.id);
+                    btn.classList.add('filter-btn', 'text-white', 'font-semibold', 'py-2', 'px-4', 'rounded-full', 'transition-colors', 'duration-200');
+                    btn.style.backgroundColor = cat.color;
+                    btn.textContent = cat.name;
+                    navContainer.appendChild(btn);
+                });
+                
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        activeCategory = btn.dataset.category;
+                        renderJadwal();
+                    });
+                });
+            }
 
             function renderJadwal() {
                 jadwalContainer.innerHTML = '';
@@ -150,30 +199,35 @@
                 if (filteredJadwal.length === 0) {
                     jadwalContainer.innerHTML = `<p class="text-center text-gray-500">Tidak ada jadwal untuk kategori ini.</p>`;
                 } else {
-                    filteredJadwal.forEach((jadwal, index) => {
-                        const card = createJadwalCard(jadwal, jadwalData.indexOf(jadwal));
+                    filteredJadwal.forEach((jadwal) => {
+                        const card = createJadwalCard(jadwal);
                         jadwalContainer.appendChild(card);
                     });
                 }
             }
 
-            function createJadwalCard(jadwal, index) {
+            function createJadwalCard(jadwal) {
                 const card = document.createElement('div');
-                card.classList.add('bg-white', 'p-6', 'rounded-lg', 'shadow-md', 'border', 'border-gray-200', `kategori-${jadwal.kategori.toLowerCase().replace(' ', '-')}`);
+                const category = categories.find(cat => cat.id === jadwal.kategori) || { name: jadwal.kategori, color: '#f3f4f6' };
+                card.style.backgroundColor = category.color + '20'; // Lighten color for background
+                card.classList.add('p-6', 'rounded-lg', 'shadow-md', 'border', 'border-gray-200');
+                card.setAttribute('data-id', jadwal.id);
                 
+                const hariAtauTanggal = jadwal.kategori === 'Kuliah' ? jadwal.hari : jadwal.tanggal;
+
                 card.innerHTML = `
                     <div class="flex flex-col md:flex-row md:items-center md:justify-between">
                         <div class="mb-4 md:mb-0">
-                            <span class="text-xs font-semibold uppercase tracking-wider rounded-full px-3 py-1.5 text-kategori">${jadwal.kategori}</span>
+                            <span class="text-xs font-semibold uppercase tracking-wider rounded-full px-3 py-1.5" style="color: ${category.color};">${category.name}</span>
                             <h2 class="text-2xl font-semibold text-gray-900 mt-2">${jadwal.judul}</h2>
-                            <p class="text-gray-600 mt-1"><span class="font-medium">${jadwal.hari}</span>, ${jadwal.waktuMulai} - ${jadwal.waktuSelesai} WIB</p>
+                            <p class="text-gray-600 mt-1"><span class="font-medium">${hariAtauTanggal}</span>, ${jadwal.waktuMulai} - ${jadwal.waktuSelesai} WIB</p>
                         </div>
                         <div class="flex flex-col md:flex-row gap-2">
                             <button class="add-single-to-calendar-btn bg-blue-600 text-white font-semibold py-2 px-4 rounded-full hover:bg-blue-700 transition-colors duration-200 text-sm md:text-base">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block -mt-0.5 mr-1" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
                                 </svg>
-                                Tambah Tunggal
+                                Tambah Kalender
                             </button>
                             ${jadwal.kategori === 'Kuliah' ? `
                                 <button class="add-recurring-to-calendar-btn bg-blue-600 text-white font-semibold py-2 px-4 rounded-full hover:bg-blue-700 transition-colors duration-200 text-sm md:text-base">
@@ -183,14 +237,14 @@
                                     Tambah Semester
                                 </button>
                             ` : ''}
-                            <button data-index="${index}" class="edit-jadwal-btn bg-yellow-500 text-white font-semibold py-2 px-4 rounded-full hover:bg-yellow-600 transition-colors duration-200 text-sm md:text-base">
+                            <button class="edit-jadwal-btn bg-yellow-500 text-white font-semibold py-2 px-4 rounded-full hover:bg-yellow-600 transition-colors duration-200 text-sm md:text-base">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block -mt-0.5 mr-1" viewBox="0 0 20 20" fill="currentColor">
                                     <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
                                     <path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 012 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" />
                                 </svg>
                                 Edit
                             </button>
-                            <button data-index="${index}" class="delete-jadwal-btn bg-red-500 text-white font-semibold py-2 px-4 rounded-full hover:bg-red-600 transition-colors duration-200 text-sm md:text-base">
+                            <button class="delete-jadwal-btn bg-red-500 text-white font-semibold py-2 px-4 rounded-full hover:bg-red-600 transition-colors duration-200 text-sm md:text-base">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block -mt-0.5 mr-1" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                                 </svg>
@@ -229,15 +283,18 @@
                 
                 const editJadwalBtn = card.querySelector('.edit-jadwal-btn');
                 editJadwalBtn.addEventListener('click', () => {
-                    openEditModal(index);
+                    openEditModal(jadwal.id);
                 });
 
                 const deleteJadwalBtn = card.querySelector('.delete-jadwal-btn');
                 deleteJadwalBtn.addEventListener('click', () => {
                     if (confirm('Apakah Anda yakin ingin menghapus jadwal ini?')) {
-                        jadwalData.splice(index, 1);
-                        localStorage.setItem('multiCategoryJadwal', JSON.stringify(jadwalData));
-                        renderJadwal();
+                        const itemIndex = jadwalData.findIndex(item => item.id === jadwal.id);
+                        if (itemIndex > -1) {
+                            jadwalData.splice(itemIndex, 1);
+                            localStorage.setItem('multiCategoryJadwal', JSON.stringify(jadwalData));
+                            renderJadwal();
+                        }
                     }
                 });
 
@@ -247,20 +304,27 @@
             function addToGoogleCalendar(jadwal, isRecurring) {
                 const [startHour, startMinute] = jadwal.waktuMulai.split(':').map(Number);
                 const [endHour, endMinute] = jadwal.waktuSelesai.split(':').map(Number);
-                const dayIndex = hariMap[jadwal.hari];
                 
-                const today = new Date();
-                const currentDayIndex = today.getDay();
+                let startDate, endDate;
                 
-                let dayOffset = dayIndex - currentDayIndex;
-                if (dayOffset < 0) {
-                    dayOffset += 7;
+                if (jadwal.kategori === 'Kuliah') {
+                    const dayIndex = hariMap[jadwal.hari];
+                    const today = new Date();
+                    const currentDayIndex = today.getDay();
+                    
+                    let dayOffset = dayIndex - currentDayIndex;
+                    if (dayOffset < 0) {
+                        dayOffset += 7;
+                    }
+
+                    startDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + dayOffset);
+                    endDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + dayOffset);
+                } else {
+                    startDate = new Date(jadwal.tanggal);
+                    endDate = new Date(jadwal.tanggal);
                 }
 
-                const startDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + dayOffset);
                 startDate.setHours(startHour, startMinute, 0, 0);
-
-                const endDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + dayOffset);
                 endDate.setHours(endHour, endMinute, 0, 0);
 
                 const formatDateTime = (date) => {
@@ -285,7 +349,7 @@
                 
                 if (isRecurring && jadwal.kategori === 'Kuliah') {
                     const semesterEndDate = new Date();
-                    semesterEndDate.setDate(today.getDate() + (semesterLengthWeeks * 7));
+                    semesterEndDate.setDate(startDate.getDate() + (semesterLengthWeeks * 7));
                     const untilDate = formatDateTime(semesterEndDate);
                     calendarUrl += `&recur=RRULE:FREQ=WEEKLY;UNTIL=${untilDate}`;
                 }
@@ -293,29 +357,81 @@
                 window.open(calendarUrl, '_blank');
             }
 
-            function openEditModal(index = null) {
-                modalTitle.textContent = index === null ? 'Tambah Jadwal Baru' : 'Edit Jadwal';
-                editForm.reset();
-                if (index !== null) {
-                    const jadwal = jadwalData[index];
-                    document.getElementById('edit-kategori').value = jadwal.kategori;
-                    document.getElementById('edit-hari').value = jadwal.hari;
-                    document.getElementById('edit-waktu-mulai').value = jadwal.waktuMulai;
-                    document.getElementById('edit-waktu-selesai').value = jadwal.waktuSelesai;
-                    document.getElementById('edit-judul').value = jadwal.judul;
-                    document.getElementById('edit-deskripsi').value = jadwal.deskripsi || '';
-                    document.getElementById('edit-lokasi').value = jadwal.lokasi || '';
+            function renderInputForCategory(category, value = '') {
+                let html = '';
+                if (category === 'Kuliah') {
+                    html = `
+                        <label for="edit-hari" class="block text-sm font-medium text-gray-700">Hari</label>
+                        <select id="edit-hari" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                            <option value="Senin">Senin</option>
+                            <option value="Selasa">Selasa</option>
+                            <option value="Rabu">Rabu</option>
+                            <option value="Kamis">Kamis</option>
+                            <option value="Jumat">Jumat</option>
+                            <option value="Sabtu">Sabtu</option>
+                            <option value="Minggu">Minggu</option>
+                        </select>
+                    `;
+                } else {
+                    html = `
+                        <label for="edit-tanggal" class="block text-sm font-medium text-gray-700">Tanggal</label>
+                        <input type="date" id="edit-tanggal" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
+                    `;
                 }
-                editForm.dataset.index = index;
+                dateOrDayInput.innerHTML = html;
+
+                if (category === 'Kuliah' && value) {
+                    document.getElementById('edit-hari').value = value;
+                } else if (value) {
+                    document.getElementById('edit-tanggal').value = value;
+                }
+            }
+
+            function renderCategoryOptions() {
+                editKategori.innerHTML = '';
+                categories.forEach(cat => {
+                    const option = document.createElement('option');
+                    option.value = cat.id;
+                    option.textContent = cat.name;
+                    editKategori.appendChild(option);
+                });
+            }
+
+            function openEditModal(id = null) {
+                modalTitle.textContent = id === null ? 'Tambah Jadwal Baru' : 'Edit Jadwal';
+                editForm.reset();
+                renderCategoryOptions();
+                let initialCategory = categories[0].id;
+                let initialDayOrDate = '';
+
+                if (id !== null) {
+                    const jadwal = jadwalData.find(item => item.id === id);
+                    if (jadwal) {
+                        initialCategory = jadwal.kategori;
+                        initialDayOrDate = jadwal.kategori === 'Kuliah' ? jadwal.hari : jadwal.tanggal;
+                        
+                        document.getElementById('edit-waktu-mulai').value = jadwal.waktuMulai;
+                        document.getElementById('edit-waktu-selesai').value = jadwal.waktuSelesai;
+                        document.getElementById('edit-judul').value = jadwal.judul;
+                        document.getElementById('edit-deskripsi').value = jadwal.deskripsi || '';
+                        document.getElementById('edit-lokasi').value = jadwal.lokasi || '';
+                    }
+                }
+
+                document.getElementById('edit-kategori').value = initialCategory;
+                renderInputForCategory(initialCategory, initialDayOrDate);
+                
+                editForm.dataset.id = id;
                 editModal.classList.remove('hidden');
             }
 
             editForm.addEventListener('submit', (e) => {
                 e.preventDefault();
-                const index = editForm.dataset.index;
+                const id = editForm.dataset.id;
+                const kategori = document.getElementById('edit-kategori').value;
+                
                 const newJadwal = {
-                    kategori: document.getElementById('edit-kategori').value,
-                    hari: document.getElementById('edit-hari').value,
+                    kategori: kategori,
                     waktuMulai: document.getElementById('edit-waktu-mulai').value,
                     waktuSelesai: document.getElementById('edit-waktu-selesai').value,
                     judul: document.getElementById('edit-judul').value,
@@ -323,10 +439,20 @@
                     lokasi: document.getElementById('edit-lokasi').value
                 };
 
-                if (index === 'null') {
+                if (kategori === 'Kuliah') {
+                    newJadwal.hari = document.getElementById('edit-hari').value;
+                } else {
+                    newJadwal.tanggal = document.getElementById('edit-tanggal').value;
+                }
+
+                if (id === 'null') {
+                    newJadwal.id = Date.now();
                     jadwalData.push(newJadwal);
                 } else {
-                    jadwalData[index] = newJadwal;
+                    const itemIndex = jadwalData.findIndex(item => item.id === parseInt(id));
+                    if (itemIndex > -1) {
+                        jadwalData[itemIndex] = {...jadwalData[itemIndex], ...newJadwal};
+                    }
                 }
 
                 localStorage.setItem('multiCategoryJadwal', JSON.stringify(jadwalData));
@@ -342,13 +468,62 @@
                 openEditModal();
             });
 
-            filterBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    activeCategory = btn.dataset.category;
-                    renderJadwal();
-                });
+            editKategori.addEventListener('change', (e) => {
+                renderInputForCategory(e.target.value);
             });
 
+            // Category Management Logic
+            manageCategoriesBtn.addEventListener('click', () => {
+                renderCategoryList();
+                categoryModal.classList.remove('hidden');
+            });
+
+            closeCategoryModalBtn.addEventListener('click', () => {
+                categoryModal.classList.add('hidden');
+                renderNavButtons();
+            });
+
+            addCategoryForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const newName = newCategoryNameInput.value;
+                const newColor = newCategoryColorInput.value;
+                const newId = newName.replace(/\s/g, '_').toLowerCase();
+                categories.push({ id: newId, name: newName, color: newColor });
+                saveCategories();
+                renderCategoryList();
+                addCategoryForm.reset();
+            });
+
+            function renderCategoryList() {
+                categoryList.innerHTML = '';
+                categories.forEach(cat => {
+                    const li = document.createElement('li');
+                    li.classList.add('flex', 'items-center', 'justify-between', 'p-2', 'bg-gray-100', 'rounded-md');
+                    li.innerHTML = `
+                        <div class="flex items-center gap-2">
+                            <span class="w-4 h-4 rounded-full" style="background-color: ${cat.color};"></span>
+                            <span>${cat.name}</span>
+                        </div>
+                        <button data-id="${cat.id}" class="delete-category-btn text-red-500 hover:text-red-700">Hapus</button>
+                    `;
+                    categoryList.appendChild(li);
+                });
+
+                document.querySelectorAll('.delete-category-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const categoryId = btn.dataset.id;
+                        if (confirm(`Apakah Anda yakin ingin menghapus kategori '${categories.find(c => c.id === categoryId).name}'? Jadwal di bawah kategori ini tidak akan dihapus.`)) {
+                            categories = categories.filter(c => c.id !== categoryId);
+                            saveCategories();
+                            renderCategoryList();
+                            renderNavButtons();
+                        }
+                    });
+                });
+            }
+
+            // Initial rendering
+            renderNavButtons();
             renderJadwal();
         });
     </script>
